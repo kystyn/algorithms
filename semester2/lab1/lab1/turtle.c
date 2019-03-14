@@ -1,5 +1,7 @@
 #include "turtle.h"
 
+#define min(A, B) ((A) <= (B) ? (A) : (B))
+
 int init2DArray( int w, int h, int ***arr ) {
   int i;
 
@@ -80,7 +82,7 @@ route evalShortestRoute( map *m ) {
     cameFrom[0][x] = WEST;
   }
 
-  /* Evaluste time along the leftist column */
+  /* Evaluate time along the leftist column */
   for (y = 1; y <= m->h; y++) {
     times[y][0] = times[y - 1][0] + m->paths[2 * y - 1][0];
     cameFrom[y][0] = SOUTH;
