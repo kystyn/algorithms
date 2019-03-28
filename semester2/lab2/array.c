@@ -77,8 +77,8 @@ void AddToArray( array *L, const void *Block )
  */
 void FreeArray( array *L )
 {
-  L = 0;
-  free(L->List);
+    free(L->List);
+    L = NULL;
 } /* End of 'FreeList' function */
 
 /* Get by idx function

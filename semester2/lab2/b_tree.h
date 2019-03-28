@@ -5,6 +5,7 @@
 
 typedef struct tag_node {
     uint nodeCount;
+    uint isLeaf;
     uint *keys;
     struct tag_node **children;
 } node;

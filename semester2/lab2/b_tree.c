@@ -1,27 +1,26 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "b_tree.h"
 #include "stack.h"
 
-void initNode( b_tree *t, node *n, uint size ) {
-    if (size == 0) {
-        n->keys = NULL;
-        n->children = NULL;
-    }
-    else {
-        n->keys = (uint *)malloc(sizeof(int) * (2 * t->degree - 1));
-        n->children = (node **)malloc(sizeof(node *) * (2 * t->degree));
-    }
+void initNode( b_tree *t, node **n, uint isLeaf ) {
+     *n = malloc(sizeof(node));
 
-    n->nodeCount = 0;
+    (*n)->keys = malloc(sizeof(int) * (2 * t->degree - 1));
+    if ((*n)->keys == NULL)
+        printf("ALARM");
+    (*n)->children = malloc(sizeof(node *) * (2 * t->degree));
+    (*n)->nodeCount = 0;
+    (*n)->isLeaf = isLeaf;
 }
 
 void initTree( b_tree *t, uint degree ) {
     if (t == NULL)
         return;
     t->degree = degree;
-    initNode(t, t->root, 0);
+    initNode(t, &t->root, 1);
 }
 
 uint search( b_tree *t, uint key ) {
@@ -76,11 +75,11 @@ void insert( b_tree *t, uint key ) {
     uint needPop = 1;
     stack s;
 
-    struct tagdata{
+    struct tagdata {
         node *n, *parent;
     } data;
 
-    initStack(&s, sizeof(data));
+    initStack(&s, sizeof(struct tagdata));
 
     data.n = t->root;
     data.parent = NULL;
@@ -88,27 +87,20 @@ void insert( b_tree *t, uint key ) {
     push(&s, &data);
 
     while (s.NumBlock != 0) {
-        uint getOut = 0;
-
         needPop = 1;
 
         data = *(struct tagdata *)top(&s);
         n = data.n;
         parent = data.parent;
 
-        if (n == NULL) {
-            pop(&s);
-            continue;
-        }
+        if (n->isLeaf)
+            break;
 
         for (i = 0; i < n->nodeCount + 1; i++)
             if (key >= n->children[i]->keys[0] &&
                 key <= n->children[i]->keys[n->children[i]->nodeCount - 1]) {
                 data.parent = n;
                 data.n = n->children[i];
-
-                if (n->children == NULL)
-                    getOut = 1;
 
                 push(&s, &data);
                 needPop = 0;
@@ -117,9 +109,6 @@ void insert( b_tree *t, uint key ) {
             }
         if (needPop)
             pop(&s);
-
-        if (getOut)
-            break;
     }
 
     // backtrack
@@ -130,16 +119,24 @@ void insert( b_tree *t, uint key ) {
 
         // has a place to insert
         if (n->nodeCount < 2 * t->degree - 1) {
-            uint numToInsert;
-            // find place to insert
-            for (numToInsert = 0; numToInsert < n->nodeCount; numToInsert++)
-                if (n->keys[numToInsert] <= key && key <= n->keys[numToInsert + 1])
-                    break; // insert after keys[numToInsert]
+            uint numToInsert ;
+
+            if (n->nodeCount == 0 || n->keys[0] >= key)
+                numToInsert = 0xFFFFFFFF;
+            else if (n->keys[n->nodeCount - 1] <= key)
+                numToInsert = n->nodeCount - 1;
+            else
+                // find place to insert
+                for (numToInsert = 0; numToInsert + 1 < n->nodeCount; numToInsert++)
+                    if (n->keys[numToInsert] <= key && key <= n->keys[numToInsert + 1]) {
+                        break; // insert after keys[numToInsert]
+                    }
 
             for (i = n->nodeCount; i > numToInsert + 1; i--)
                 n->keys[i] = n->keys[i - 1];
 
             n->keys[numToInsert + 1] = key;
+            n->nodeCount++;
             FreeArray(&s);
             return;
         }
@@ -147,11 +144,15 @@ void insert( b_tree *t, uint key ) {
             node *prevRoot = t->root;
 
             prevRoot->nodeCount /= 2;
-            initNode(t, t->root, prevRoot->nodeCount);
+            initNode(t, &t->root, 0);
             t->root->children[0] = prevRoot;
 
-            prevRoot->children += prevRoot->nodeCount + 1;
-            t->root->children[1] = prevRoot;
+            initNode(t, &t->root->children[1], t->root->children[0]->isLeaf);
+
+            /// HERE I STOPPED
+            memcpy(t->root->children[1],
+                    prevRoot->children + prevRoot->nodeCount,
+                    prevRoot->nodeCount + prevRoot->nodeCount % 2);
 
             t->root->nodeCount = 2;
             pop(&s);
