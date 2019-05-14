@@ -1,27 +1,37 @@
 #include "kdtree.h"
 #include "base_point.h"
 
-class uint_point_component : public point_component<uint> {
+class double_point_component : public point_component<double> {
 public:
-  uint_point_component( uint x ) : point_component<uint>(x) {}
+  double_point_component( uint x ) : point_component<double>(x) {}
 
-  uint getMedian( point_component<uint> const &p ) const override {
+  double getMedian( point_component<double> const &p ) const override {
     return (value + p.getValue()) / 2;
   }
 };
 
 int main( void ) {
-  kd_tree<2, uint> t;
-  array<shared_ptr<const point_component<uint>>, 2> pt {
-    make_shared<uint_point_component>(2),
-    make_shared<uint_point_component>(3)
+  kd_tree<2, double> t;
+  array<shared_ptr<point_component<double>>, 2> pt {
+    make_shared<double_point_component>(2),
+    make_shared<double_point_component>(3)
   };
 
-  point<2, uint> p(pt);
+  point<2, double> p(pt);
   t.add(p);
 
-  pt[0] = make_shared<uint_point_component>(4);
+  pt[0] = make_shared<double_point_component>(4);
   p = {pt};
   t.add(p);
+
+  pt[1] = make_shared<double_point_component>(4);
+  p = {pt};
+  t.add(p);
+
+  pt[0] = make_shared<double_point_component>(5);
+  p = {pt};
+  t.add(p);
+
+  t.remove(pt);
   return 0;
 }

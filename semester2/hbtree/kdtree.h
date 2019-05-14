@@ -33,33 +33,35 @@ public:
       return *this;
     }
 
-    auto cur = root;
+    shared_ptr<kd_tree_node<dimension, T>> cur;
 
-    search(p, cur, make_unique<uint>(level));
+    search(p, cur, level);
 
-    auto save = make_shared<kd_tree_node<dimension, T>>(*cur);
+    auto save = *cur;
     cur->isLeaf = false;
     cur->point = p;
-    cur->hyperplaneEquation = save->point(level % dimension)->getMedian((*cur)[level % dimension]);
+    cur->hyperplaneEquation = save.point(level % dimension)->getMedian((*cur)[level % dimension]);
 
-    if ((*save)[level % dimension] < cur->hyperplaneEquation) {
-      cur->left = save;
+    if (save[level % dimension] < cur->hyperplaneEquation) {
+      cur->left = make_shared<kd_tree_node<dimension, T>>(save);
       cur->right = make_shared<kd_tree_node<dimension, T>>(kd_tree_node<dimension, T>(p));
       cur->right->isLeaf = true;
     }
     else {
       cur->left = make_shared<kd_tree_node<dimension, T>>(kd_tree_node<dimension, T>(p));
-      cur->right = save;
+      cur->right = make_shared<kd_tree_node<dimension, T>>(save);
       cur->left->isLeaf = true;
     }
     return *this;
   }
 
-  kd_tree & remove( shared_ptr<point<dimension, T>> p ) {
+  kd_tree & remove( point<dimension, T> const &p ) {
     auto cur = root, prev = cur;
 
+    uint level = 0;
+
     while (!cur->isLeaf) {
-      prev = cur
+      prev = cur;
       if (p[level % dimension] < cur->hyperplaneEquation)
         cur = cur->left;
       else
@@ -67,29 +69,31 @@ public:
       level++;
     }
 
-    if (!(*cur == *p))
+    if (!(cur->point == p))
       return *this;
 
     prev->isLeaf = true;
-    if (*prev->left == *cur)
+
+    if (prev->left->point == cur->point)
       prev->point = prev->right->point;
     else
       prev->point = prev->left->point;
 
-    delete cur;
+    prev->left = prev->right = nullptr;
+
     return *this;
   }
 
   bool search( point<dimension, T> const &p,
-    shared_ptr<kd_tree_node<dimension, T>> cur, std::unique_ptr<uint> level = 0 ) const {
+    shared_ptr<kd_tree_node<dimension, T>> &cur, uint &level = (uint &)0 ) const {
     cur = root;
 
     while (!cur->isLeaf) {
-      if (p[*level % dimension] < cur->hyperplaneEquation)
+      if (p[level % dimension] < cur->hyperplaneEquation)
         cur = cur->left;
       else
         cur = cur->right;
-      (*level)++;
+      level++;
     }
 
     return cur->point == p;

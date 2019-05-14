@@ -26,7 +26,9 @@ protected:
 template<uint dimension, typename T>
 class point {
 public:
-  point( array<shared_ptr<const point_component<T>>, dimension> const &c = {} ) : coordinates(c) {}
+  point() {}
+
+  point( array<shared_ptr<point_component<T>>, dimension> const &c ) : coordinates(c) {}
 
   point_component<T> operator[]( uint idx ) const {
     if (idx < dimension)
@@ -34,7 +36,7 @@ public:
     return *coordinates.back();
   }
 
-  shared_ptr<const point_component<T>> operator()( uint idx ) const {
+  shared_ptr<point_component<T>> operator()( uint idx ) const {
     return coordinates[idx];
   }
 
@@ -46,5 +48,5 @@ public:
   }
 
 private:
-  array<shared_ptr<const point_component<T>>, dimension> coordinates;
+  array<shared_ptr<point_component<T>>, dimension> coordinates;
 };
