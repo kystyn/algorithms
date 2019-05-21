@@ -16,6 +16,6 @@ HEADERS += \
 
 SOURCES += \
         main.cpp \
-    ../stack.cpp \
-    ../b_tree.cpp \
-    ../array.cpp
+    ../stack.c \
+    ../b_tree.c \
+    ../array.c

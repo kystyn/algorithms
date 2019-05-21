@@ -4,10 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp \
-    b_tree.cpp \
-    array.cpp \
-    stack.cpp
+        main.c \
+    b_tree.c \
+    array.c \
+    stack.c
 
 HEADERS += \
     b_tree.h \
