@@ -12,14 +12,15 @@ void initHashTable(
     t->table = malloc(sizeof(array) * m);
 
     uint idx;
+    char *nil = NULL;
 
     for (idx = 0; idx < t->m; idx++) {
-        InitArray(&t->table[idx], sizeof(uint), 1);
-        *(char **)GetByIdx(&t->table[idx], 0) = NULL; // NULL-initialization
+        InitArray(&t->table[idx], sizeof(char *), 1 * sizeof(char *));
+        AddToArray(&t->table[idx], &nil);
     }
 }
 
-void add( double_hash_table *t, char *key ) {
+void addToHashTable( double_hash_table *t, char *key ) {
     uint i;
     uint minOccupancy = 0xFFFFFFFF, minOccupancyCell = 0;
     for (i = 0; i < t->m; i++) {
@@ -43,7 +44,7 @@ void add( double_hash_table *t, char *key ) {
     }
 }
 
-uint search( double_hash_table *t, char *key ) {
+uint searchHashTable( double_hash_table *t, char *key ) {
     uint i;
 
     for (i = 0; i < t->m; i++) {
@@ -52,10 +53,21 @@ uint search( double_hash_table *t, char *key ) {
             uint j;
 
             for (j = 0; j < t->table[(t->hash1(key) + i * t->hash2(key)) % t->m].NumBlock; j++)
-                if (strcmp(GetByIdx(&t->table[(t->hash1(key) + i * t->hash2(key)) % t->m], j), key) == 0)
+                if (strcmp(*(char **)GetByIdx(&t->table[(t->hash1(key) + i * t->hash2(key)) % t->m], j), key) == 0)
                     return 1;
         }
     }
 
     return 0;
+}
+
+void freeHashTable( double_hash_table *t ) {
+    uint i, j;
+
+    for (i = 0; i < t->m; i++) {
+        for (j = 0; j < t->table[i].AllocatedBlocks; j++)
+            free(*(char **)GetByIdx(&t->table[i], j));
+        FreeArray(&t->table[i]);
+    }
+    free(t->table);
 }

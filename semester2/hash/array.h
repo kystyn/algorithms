@@ -12,8 +12,9 @@ typedef struct tag_array
   unsigned char *List;               /* Data array */
   unsigned char *CurrentPtr;         /* List[Numblock] */
   uint CurrentListSize;      /* Maximal count of blocks */
-  uint NumBlock;             /* Current number of blocks */
+  uint NumBlock;             /* Current number of visible blocks */
   uint BlockSize;            /* Block size */
+  uint AllocatedBlocks;      /* Current number of ALL blocks */
 } array; /* End of 'array' structure */
 
 /* Init array function.
@@ -38,6 +39,8 @@ void InitArray( array *L, uint BlockSize, uint startSize );
  */
 void AddToArray( array *L, const void *Block );
 
+void DeleteFromArray( array *L, uint Idx );
+
 /* Get by idx function
  * ARGUMENTS:
  *   - array:
@@ -48,6 +51,8 @@ void AddToArray( array *L, const void *Block );
  *   (void *) element.
  */
 void * GetByIdx( array *L, uint Idx );
+
+void ChangeByIdx( array *L, uint Idx, const void *Block );
 
 /* Reverse function.
  * ARGUMENTS:
