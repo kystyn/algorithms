@@ -2,6 +2,17 @@
 #include <string.h>
 #include "double_hash.h"
 
+#ifdef _WIN32
+/* Memory leak checker */
+#ifdef _DEBUG
+# include <crtdbg.h>
+# define SetDbgMemHooks() \
+  _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF | \
+  _CRTDBG_ALLOC_MEM_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
+#endif /* _DEBUG */
+#endif
+
+
 uint hash( char *key, uint p ) {
     uint i, powered_p = 1, res = 0;
 
@@ -22,19 +33,32 @@ uint hash2( char *key ) {
 
 int main()
 {
+#ifdef _WIN32
+#ifdef   _DEBUG
+  SetDbgMemHooks();
+#endif
+  #endif
     double_hash_table t;
     initHashTable(&t, 2, hash1, hash2);
-    addToHashTable(&t, "abcd");
-    addToHashTable(&t, "bcaca");
-    addToHashTable(&t, "cerf");
+    addHashTable(&t, "abcdasdasdasd");
+    addHashTable(&t, "bcacaqweqweqweqwe");
+    addHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
 
     uint
             neok1 = searchHashTable(&t, "a"),
-            ok1 = searchHashTable(&t, "bcaca"),
-            ok2 = searchHashTable(&t, "cerf"),
+            ok1 = searchHashTable(&t, "abcdasdasdasd"),
+            ok2 = searchHashTable(&t, "cerfqweqweqweqeqeqeqeqe"),
             neok = searchHashTable(&t, "dasdasd"),
-            ok3 = searchHashTable(&t, "abcd");
+            ok3 = searchHashTable(&t, "bcacaqweqweqweqwe");
 
+    deleteKeyHashTable(&t, "a");
+    deleteKeyHashTable(&t, "abcdasdasdasd");
+    ok1 = searchHashTable(&t, "abcdasdasdasd"),
+    addHashTable(&t, "ab");
+    deleteKeyHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
+    addHashTable(&t, "cd");
+    deleteKeyHashTable(&t, "dasdasd");
+    deleteKeyHashTable(&t, "bcacaqweqweqweqwe");
     freeHashTable(&t);
 
     printf("Hello World!\n");

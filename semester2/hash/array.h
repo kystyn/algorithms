@@ -14,7 +14,6 @@ typedef struct tag_array
   uint CurrentListSize;      /* Maximal count of blocks */
   uint NumBlock;             /* Current number of visible blocks */
   uint BlockSize;            /* Block size */
-  uint AllocatedBlocks;      /* Current number of ALL blocks */
 } array; /* End of 'array' structure */
 
 /* Init array function.

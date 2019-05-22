@@ -30,9 +30,9 @@ uint hash2( char *key ) {
 TEST(EasyHash, Search) {
     double_hash_table t;
     initHashTable(&t, 2, hash1, hash2);
-    addToHashTable(&t, "abcd");
-    addToHashTable(&t, "bcaca");
-    addToHashTable(&t, "cerf");
+    addHashTable(&t, "abcd");
+    addHashTable(&t, "bcaca");
+    addHashTable(&t, "cerf");
 
     ASSERT_FALSE(searchHashTable(&t, "a"));
     ASSERT_TRUE(searchHashTable(&t, "abcd"));
@@ -46,9 +46,9 @@ TEST(EasyHash, Search) {
 TEST(CollisedHash, Search) {
     double_hash_table t;
     initHashTable(&t, 2, hash1, hash2);
-    addToHashTable(&t, "abcd");
-    addToHashTable(&t, "bcaca");
-    addToHashTable(&t, "cerf");
+    addHashTable(&t, "abcd");
+    addHashTable(&t, "bcaca");
+    addHashTable(&t, "cerf");
 
     ASSERT_FALSE(searchHashTable(&t, "a"));
     ASSERT_TRUE(searchHashTable(&t, "abcd"));

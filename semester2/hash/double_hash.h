@@ -16,10 +16,12 @@ void initHashTable(
         uint (*hash1)( char *key ),
         uint (*hash2)( char *key ));
 
-void addToHashTable( double_hash_table *t, char *key );
+void addHashTable( double_hash_table *t, char *key );
 
 // true - exists, false otherwise
 uint searchHashTable( double_hash_table *t, char *key );
+
+void deleteKeyHashTable( double_hash_table *t, char *key );
 
 void freeHashTable( double_hash_table *t );
 

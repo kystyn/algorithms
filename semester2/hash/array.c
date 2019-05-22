@@ -19,15 +19,15 @@
  *       int BlockSize;
  * RETURNS: None.
  */
-void InitArray( array *L, uint BlockSize, uint startSize )
+void InitArray( array *L, uint BlockSize, uint startCount )
 {
-  L->CurrentListSize = startSize;
-  L->List = malloc(L->CurrentListSize);
+  L->CurrentListSize = startCount;
+  L->List = malloc(L->CurrentListSize * BlockSize);
+  memset(L->List, 0, L->CurrentListSize * BlockSize);
   if (L->List == NULL)
       return;
   L->CurrentPtr = L->List;
   L->NumBlock = 0;
-  L->AllocatedBlocks = 0;
   L->BlockSize = BlockSize;
 } /* End of 'InitList' function */
 
@@ -44,9 +44,9 @@ void InitArray( array *L, uint BlockSize, uint startSize )
 void AddToArray( array *L, const void *Block )
 {
   /* Finished memory or fist add */
-  if (L->AllocatedBlocks == 0)
+  /*if (L->NumBlock == 0)
     L->CurrentPtr = L->List = malloc(L->BlockSize * L->CurrentListSize);
-  else if (L->AllocatedBlocks == L->CurrentListSize)
+  else */if (L->NumBlock == L->CurrentListSize)
   {
     void *b;
 
@@ -54,21 +54,26 @@ void AddToArray( array *L, const void *Block )
     L->CurrentListSize <<= 1;
 
     b = malloc(L->BlockSize * L->CurrentListSize);
+    memset(b, 0, L->BlockSize * L->CurrentListSize);
 
     memcpy(b, L->List, L->BlockSize * (L->CurrentListSize >> 1));
+    free(L->List);
     L->List = b;
     L->CurrentPtr = L->List + L->NumBlock * L->BlockSize;
   }
   memcpy(L->CurrentPtr, Block, L->BlockSize);
   L->CurrentPtr += L->BlockSize;
   L->NumBlock++;
-  L->AllocatedBlocks++;
 } /* End of 'AddToList' function */
 
 /// ATTENTION: changes index order
 void DeleteFromArray( array *L, uint Idx ) {
-    memcpy(L->List + Idx, L->List + L->NumBlock - 1, L->BlockSize);
-    L->NumBlock--;
+    // clear string
+    free(*(char **)(L->List + Idx * L->BlockSize));
+    memmove(L->List + Idx * L->BlockSize,
+      L->List + (Idx + 1) * L->BlockSize,
+      (L->NumBlock - 1 - (Idx + 1) + 1) * L->BlockSize);
+    *(char **)GetByIdx(L, L->NumBlock - 1) = NULL;
 }
 
 /* Free array function.
@@ -80,7 +85,7 @@ void DeleteFromArray( array *L, uint Idx ) {
 void FreeArray( array *L )
 {
   free(L->List);
-  L = 0;
+  L->List = 0;
 } /* End of 'FreeList' function */
 
 /* Get by idx function
@@ -92,16 +97,16 @@ void FreeArray( array *L )
  * RETURNS:
  *   (void *) element.
  */
-void * GetByIdx( array *L, unsigned int Idx )
+void * GetByIdx( array *L, uint Idx )
 {
   /* Trying to get too big element */
-  if (Idx >= L->AllocatedBlocks)
+  if (Idx >= L->CurrentListSize)
     return NULL;
   return L->List + Idx * L->BlockSize;
 } /* End of 'GetByIdx' function */
 
 void ChangeByIdx( array *L, uint Idx, const void *Block ) {
-    if (Idx >= L->AllocatedBlocks)
+    if (Idx >= L->CurrentListSize)
       return;
     memcpy(L->List + Idx * L->BlockSize, Block, L->BlockSize);
 }
