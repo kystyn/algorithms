@@ -13,7 +13,7 @@
 #endif
 
 
-uint hash( char *key, uint p ) {
+uint hash( const char *key, uint p ) {
     uint i, powered_p = 1, res = 0;
 
     for (i = 0; i < strlen(key); i++)
@@ -22,11 +22,11 @@ uint hash( char *key, uint p ) {
     return res;
 }
 
-uint hash1( char *key ) {
+uint hash1( const char *key ) {
     return hash(key, 3);
 }
 
-uint hash2( char *key ) {
+uint hash2( const char *key ) {
     return hash(key, 2);
 }
 

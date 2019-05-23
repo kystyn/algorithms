@@ -4,8 +4,8 @@
 
 void initHashTable(
         double_hash_table *t, uint m,
-        uint (*hash1)( char *key ),
-        uint (*hash2)( char *key )) {
+        uint (*hash1)( const char *key ),
+        uint (*hash2)( const char *key )) {
     t->hash1 = hash1;
     t->hash2 = hash2;
     t->m = m;
@@ -15,12 +15,12 @@ void initHashTable(
     char *nil = NULL;
 
     for (idx = 0; idx < t->m; idx++) {
-        InitArray(&t->table[idx], sizeof(char *), 1);
+        InitArray(&t->table[idx], sizeof(const char *), 1);
         AddToArray(&t->table[idx], &nil);
     }
 }
 
-void addHashTable( double_hash_table *t, char *key ) {
+void addHashTable( double_hash_table *t, const char *key ) {
     uint i;
     uint minOccupancy = 0xFFFFFFFF, minOccupancyCell = 0;
     for (i = 0; i < t->m; i++) {
@@ -44,7 +44,7 @@ void addHashTable( double_hash_table *t, char *key ) {
     }
 }
 
-uint searchHashTable( double_hash_table *t, char *key ) {
+uint searchHashTable( double_hash_table *t, const char *key ) {
     uint i;
 
     for (i = 0; i < t->m; i++) {
@@ -62,7 +62,7 @@ uint searchHashTable( double_hash_table *t, char *key ) {
     return 0;
 }
 
-void deleteKeyHashTable( double_hash_table *t, char *key ) {
+void deleteKeyHashTable( double_hash_table *t, const char *key ) {
   uint i;
 
     for (i = 0; i < t->m; i++) {

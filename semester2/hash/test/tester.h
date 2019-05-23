@@ -9,7 +9,7 @@ extern "C" {
 
 using namespace testing;
 
-uint hash( char *key, uint p ) {
+uint hash( const char *key, uint p ) {
     uint i, powered_p = 1, res = 0;
 
     for (i = 0; i < strlen(key); i++)
@@ -18,11 +18,11 @@ uint hash( char *key, uint p ) {
     return res;
 }
 
-uint hash1( char *key ) {
+uint hash1( const char *key ) {
     return hash(key, 3);
 }
 
-uint hash2( char *key ) {
+uint hash2( const char *key ) {
     return hash(key, 2);
 }
 
@@ -43,6 +43,24 @@ TEST(EasyHash, Search) {
     freeHashTable(&t);
 }
 
+TEST(EasyHash, Delete) {
+    double_hash_table t;
+    initHashTable(&t, 2, hash1, hash2);
+    addHashTable(&t, "abcd");
+    deleteKeyHashTable(&t, "abcd");
+    addHashTable(&t, "bcaca");
+    deleteKeyHashTable(&t, "bcaca");
+    addHashTable(&t, "cerf");
+
+    ASSERT_FALSE(searchHashTable(&t, "a"));
+    ASSERT_FALSE(searchHashTable(&t, "abcd"));
+    ASSERT_FALSE(searchHashTable(&t, "bcaca"));
+    ASSERT_TRUE(searchHashTable(&t, "cerf"));
+    ASSERT_FALSE(searchHashTable(&t, "dasdasd"));
+
+    freeHashTable(&t);
+}
+
 TEST(CollisedHash, Search) {
     double_hash_table t;
     initHashTable(&t, 2, hash1, hash2);
@@ -56,5 +74,28 @@ TEST(CollisedHash, Search) {
     ASSERT_TRUE(searchHashTable(&t, "cerf"));
     ASSERT_FALSE(searchHashTable(&t, "dasdasd"));
 
+    freeHashTable(&t);
+}
+
+TEST(CollisedHash, Delete) {
+    double_hash_table t;
+    initHashTable(&t, 2, hash1, hash2);
+    addHashTable(&t, "abcdasdasdasd");
+    addHashTable(&t, "bcacaqweqweqweqwe");
+    addHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
+
+    deleteKeyHashTable(&t, "a");
+    deleteKeyHashTable(&t, "abcdasdasdasd");
+    ASSERT_FALSE(searchHashTable(&t, "abcdasdasdasd"));
+    addHashTable(&t, "ab");
+    deleteKeyHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
+    ASSERT_FALSE(searchHashTable(&t, "cerfqweqweqweqeqeqeqeqe"));
+    addHashTable(&t, "cd");
+    deleteKeyHashTable(&t, "dasdasd");
+    ASSERT_FALSE(searchHashTable(&t, "dasdasd"));
+    deleteKeyHashTable(&t, "bcacaqweqweqweqwe");
+    ASSERT_FALSE(searchHashTable(&t, "bcacaqweqweqweqwe"));
+    ASSERT_TRUE(searchHashTable(&t, "cd"));
+    ASSERT_TRUE(searchHashTable(&t, "ab"));
     freeHashTable(&t);
 }
