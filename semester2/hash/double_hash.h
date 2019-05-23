@@ -7,7 +7,7 @@ typedef struct {
     uint (*hash1)( const char *key );
     uint (*hash2)( const char *key );
     uint m;
-    array *table;
+    array table;
 } double_hash_table;
 
 // m - table size

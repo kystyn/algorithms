@@ -69,7 +69,7 @@ void AddToArray( array *L, const void *Block )
 /// ATTENTION: changes index order
 void DeleteFromArray( array *L, uint Idx ) {
     // clear string
-    free(*(char **)(L->List + Idx * L->BlockSize));
+    free(*(unsigned char **)(L->List + Idx * L->BlockSize));
     memmove(L->List + Idx * L->BlockSize,
       L->List + (Idx + 1) * L->BlockSize,
       (L->NumBlock - 1 - (Idx + 1) + 1) * L->BlockSize);

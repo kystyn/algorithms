@@ -9,6 +9,8 @@ extern "C" {
 
 using namespace testing;
 
+uint m = 5;
+
 uint hash( const char *key, uint p ) {
     uint i, powered_p = 1, res = 0;
 
@@ -23,13 +25,14 @@ uint hash1( const char *key ) {
 }
 
 uint hash2( const char *key ) {
-    return hash(key, 2);
+    return hash(key, 2) % (m - 1) + 1;
 }
 
 
 TEST(EasyHash, Search) {
     double_hash_table t;
-    initHashTable(&t, 2, hash1, hash2);
+    m = 5;
+    initHashTable(&t, m, hash1, hash2);
     addHashTable(&t, "abcd");
     addHashTable(&t, "bcaca");
     addHashTable(&t, "cerf");
