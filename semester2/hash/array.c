@@ -61,15 +61,13 @@ void AddToArray( array *L, const void *Block )
     L->List = b;
     L->CurrentPtr = L->List + L->NumBlock * L->BlockSize;
   }
-  memcpy(L->CurrentPtr, Block, L->BlockSize);
+  memmove(L->CurrentPtr, Block, L->BlockSize);
   L->CurrentPtr += L->BlockSize;
   L->NumBlock++;
 } /* End of 'AddToList' function */
 
 /// ATTENTION: changes index order
 void DeleteFromArray( array *L, uint Idx ) {
-    // clear string
-    free(*(unsigned char **)(L->List + Idx * L->BlockSize));
     memmove(L->List + Idx * L->BlockSize,
       L->List + (Idx + 1) * L->BlockSize,
       (L->NumBlock - 1 - (Idx + 1) + 1) * L->BlockSize);
@@ -97,7 +95,7 @@ void FreeArray( array *L )
  * RETURNS:
  *   (void *) element.
  */
-void * GetByIdx( array *L, uint Idx )
+const void * GetByIdx( array *L, uint Idx )
 {
   /* Trying to get too big element */
   if (Idx >= L->CurrentListSize)
@@ -110,30 +108,3 @@ void ChangeByIdx( array *L, uint Idx, const void *Block ) {
       return;
     memcpy(L->List + Idx * L->BlockSize, Block, L->BlockSize);
 }
-
-/* Reverse function.
- * ARGUMENTS:
- *   - array:
- *       array *L;
- * RETURNS: None.
- */
-void Reverse( array *L )
-{
-  unsigned int i;
-
-  for (i = 0; i < L->NumBlock / 2; i++)
-  {
-    char
-      *p1 = GetByIdx(L, i),
-      *p2 = GetByIdx(L, L->NumBlock - 1 - i);
-
-    unsigned int j;
-
-    for (j = 0; j < L->BlockSize; j++)
-    {
-      char t = p1[j];
-      p1[j] = p2[j];
-      p2[j] = t;
-    }
-  }
-} /* End of 'Reverse' function */

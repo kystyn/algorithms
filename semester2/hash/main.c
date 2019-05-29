@@ -40,9 +40,9 @@ int main()
   #endif
     double_hash_table t;
     initHashTable(&t, 2, hash1, hash2);
-    addHashTable(&t, "abcdasdasdasd");
-    addHashTable(&t, "bcacaqweqweqweqwe");
-    addHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
+    addKeyHashTable(&t, "abcdasdasdasd");
+    addKeyHashTable(&t, "bcacaqweqweqweqwe");
+    addKeyHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
 
     uint
             neok1 = searchHashTable(&t, "a"),
@@ -54,9 +54,9 @@ int main()
     deleteKeyHashTable(&t, "a");
     deleteKeyHashTable(&t, "abcdasdasdasd");
     ok1 = searchHashTable(&t, "abcdasdasdasd"),
-    addHashTable(&t, "ab");
+    addKeyHashTable(&t, "ab");
     deleteKeyHashTable(&t, "cerfqweqweqweqeqeqeqeqe");
-    addHashTable(&t, "cd");
+    addKeyHashTable(&t, "cd");
     deleteKeyHashTable(&t, "dasdasd");
     deleteKeyHashTable(&t, "bcacaqweqweqweqwe");
     freeHashTable(&t);

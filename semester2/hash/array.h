@@ -49,17 +49,9 @@ void DeleteFromArray( array *L, uint Idx );
  * RETURNS:
  *   (void *) element.
  */
-void * GetByIdx( array *L, uint Idx );
+const void * GetByIdx( array *L, uint Idx );
 
 void ChangeByIdx( array *L, uint Idx, const void *Block );
-
-/* Reverse function.
- * ARGUMENTS:
- *   - array:
- *       array *L;
- * RETURNS: None.
- */
-void Reverse( array *L );
 
 /* Free array function.
  * ARGUMENTS:

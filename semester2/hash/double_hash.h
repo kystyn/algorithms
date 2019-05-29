@@ -16,7 +16,7 @@ void initHashTable(
         uint (*hash1)( const char *key ),
         uint (*hash2)( const char *key ));
 
-void addHashTable( double_hash_table *t, const char *key );
+void addKeyHashTable( double_hash_table *t, const char *key );
 
 // true - exists, false otherwise
 uint searchHashTable( double_hash_table *t, const char *key );
